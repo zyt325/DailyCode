@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+<link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+<style>
+    * {
+        margin: 0;
+        padding: 0
+    }
+
+    .el-header {
+        background-color: #B3C0D1;
+        color: #333;
+        line-height: 60px;
+    }
+
+    .el-aside {
+        color: #333;
+    }
+
+
+</style>
+{% endblock %}
+{% block js_head %}
+{% endblock %}
+
+{% block body %}
+<div id="app">
+    <el-container id="container" :style="containerStyle">
+        <el-header style="text-align: right;font-size: 12px">
+            <el-row>
+                <el-input style="width:120px" size="medium" placeholder="请输入内容"></el-input>
+                <el-button icon="el-icon-search" size="medium">搜索</el-button>
+                <el-button icon="el-icon-plus" size="medium">添加</el-button>
+            </el-row>
+        </el-header>
+        <el-container>
+            <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+                <el-menu :default-active="'0'">
+                    <el-menu-item index="0"><i class="el-icon-house"></i>首页</el-menu-item>
+                    {% for k,v in article_classes.items %}
+                    {% if v.sub|length == 0 %}
+                    <el-menu-item index="{{ k }}">{{ v.info.class_name }}</el-menu-item>
+                    {% else %}
+                    <el-submenu index="{{ k }}">
+                        <template slot="title">{{ v.info.class_name }}</template>
+                        <el-menu-item-group>
+                            {% for i in v.sub %}
+                            <el-menu-item index="{{ k }}-{{ i.id }}">{{ i.class_name }}</el-menu-item>
+                            {% endfor %}
+                        </el-menu-item-group>
+                    </el-submenu>
+                    {% endif %}
+                    {% endfor %}
+                    </el-submenu>
+                </el-menu>
+            </el-aside>
+            <el-main>
+                <el-table id="table" :data="tableData">
+                    <el-table-column prop="name" label="名称" sortable width="200">
+                    </el-table-column>
+                    <el-table-column prop="date" label="日期" sortable width="140">
+                    </el-table-column>
+                </el-table>
+                <el-pagination id="pagination"
+                               @size-change="handleSizeChange"
+                               @current-change="handleCurrentChange"
+                               :current-page="currentPage"
+                               :page-sizes="[15, 20, 50, 100]"
+                               :page-size="15"
+                               layout="total, sizes, prev, pager, next, jumper"
+                               :total="400">
+                </el-pagination>
+            </el-main>
+        </el-container>
+    </el-container>
+</div>
+{% endblock %}
+
+{% block js_body %}
+<!--<script src=”https://unpkg.com/axios/dist/axios.min.js”></script>-->
+<script src="//unpkg.com/vue/dist/vue.js"></script>
+<script src="//unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+
+<script>
+    var container = new Vue({
+        el: '#container',
+        data: {
+            containerStyle: {
+                height: window.innerHeight + 'px',
+                border: '1px solid #eee'
+            }
+        }
+    });
+    var table = new Vue({
+        el: '#table',
+        data: function () {
+            const item = {
+                date: '2016-05-02',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+            };
+            return {
+                tableData: Array(20).fill(item)
+            }
+        }
+    });
+    var pagination = new Vue({
+        el: '#pagination',
+        methods: {
+            handleSizeChange(val){
+                console.log(`每页 ${val} 条`);
+            },
+            handleCurrentChange(val){
+                console.log(`当前页: ${val}`);
+            }
+        },
+        data: function () {
+            return {
+                currentPage: 4
+            };
+        }
+    })
+</script>
+{% endblock %}

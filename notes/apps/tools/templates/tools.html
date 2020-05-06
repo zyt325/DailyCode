@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+<link href="https://cdn.bootcss.com/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="http://lib.personer.tech/css/bootstrap-media.css">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row header bg-light">
+        <div class="row-12">
+            <nav class="navbar navbar-expand-lg navbar-light font-weight-bold">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTools"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand" href="#">工具箱</a>
+                <div class="collapse navbar-collapse" id="navbarTools">
+                    <ul class="navbar-nav mr-auto nav nav-tabs">
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Dev">开发类<span
+                                class="sr-only">(current)</span></a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#OP">运维类<span
+                                class="sr-only">(current)</span></a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#SOFT">软件类<span
+                                class="sr-only">(current)</span></a></li>
+                        <li class="nav-item active"><a class="nav-link active" data-toggle="tab" href="#URL">网址导航<span
+                                class="sr-only">(current)</span></a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <div class="tab-content">
+        <!-- 开发类 -->
+        <div class="row body container tab-pane fade" id="Dev">
+            <div class="col-sm-12">
+                {% for class in class_set %}
+                {% if class.class_type == 'DEV' %}
+                <div class="row">
+                    <div class="col-sm-1 font-weight-bold">{{ class.class_name }}</div>
+                    <div class="col-sm-11">
+                        {% for url in class.urls_set.all %}
+                        <div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <a href="{{ url.url }}" target="_blank" class="card-link">{{ url.title }}</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                <p></p>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- 运维类 -->
+        <div class="row body container tab-pane fade" id="OP">
+            <div class="col-sm-12">
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">IP地址查询</h5>
+                        <hr>
+                        <p class="card-text">
+                            查询IP信息——cip.cc
+                        </p>
+                        <a href="http://www.cip.cc/" target="_blank" class="card-link">查询</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">域名解析查询</h5>
+                        <hr>
+                        <p class="card-text">dig查询——diggui.com</p>
+                        <a href="https://www.diggui.com/" target="_blank" class="card-link">查询</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Whois查询</h5>
+                        <hr>
+                        <p class="card-text">site.ip138.com</p>
+                        <a href="http://site.ip138.com/" target="_blank" class="card-link">查询</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">ICP备案查询</h5>
+                        <hr>
+                        <p class="card-text">icp.sojson.com</p>
+                        <a href="https://icp.sojson.com/" target="_blank" class="card-link">查询</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!--  软件列表      -->
+        <div class="row body container tab-pane fade" id="SOFT">
+            <div class="col-sm-12">
+                {% for class in class_set %}
+                {% if class.class_type == 'SOFT' %}
+                <div class="row">
+                    <div class="col-sm-1 font-weight-bold">{{ class.class_name }}</div>
+                    <div class="col-sm-11">
+                        {% for url in class.urls_set.all %}
+                        <div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <a href="{{ url.url }}" target="_blank" class="card-link">{{ url.title }}</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                <p></p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 网址导航 -->
+        <div class="row body container tab-pane active" id="URL">
+            <div class="col-sm-12">
+                {% for class in class_set %}
+                {% if class.class_type == 'URL' %}
+                <div class="row">
+                    <div class="col-sm-1 font-weight-bold">{{ class.class_name }}</div>
+                    <div class="col-sm-11">
+                        {% for url in class.urls_set.all %}
+                        <div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <a href="{{ url.url }}" target="_blank" class="card-link">{{ url.title }}</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                <p></p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+    <div class="row footer"></div>
+</div>
+{% endblock %}
+
+{% block js_body %}
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"></script>
+<script src="https://cdn.bootcss.com/popper.js/1.12.9/esm/popper.min.js"></script>
+<script src="https://cdn.bootcss.com/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
+{% endblock %}

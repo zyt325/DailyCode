@@ -1,0 +1,12 @@
+body{
+  background-color: #93BFCC;
+}
+#layout header{
+  height:60px;
+  background-color: #6B8D9D;
+  padding:20px 5px 5px;
+  margin-bottom: 5px;
+}
+#layout header span {
+  height:32px;
+}

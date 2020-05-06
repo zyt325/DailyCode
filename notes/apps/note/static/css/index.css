@@ -1,0 +1,62 @@
+*{margin: 0;padding: 0;}
+a{text-decoration: none;}
+body{color: #000000}
+#body-bg{background-color: #93BFCC;}
+#container{width: 90%;margin:0 auto;background-color: #D4E6EB;}
+
+#article_header header{text-align:right;padding-right:5px;height:60px;background-color: #6B8D9D}
+#article_header header input{
+  margin-top: 18px;
+  padding: 6px 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  cursor:text;}
+#article_header header button{
+  margin-top: 18px;
+  padding: 6px 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  cursor: pointer;}
+#article_body{border-top: #fff solid 2px;position: relative;}
+
+#article_class{width:180px;position: absolute;}
+#article_class table tr th{display:block;height:38;line-height: 38px;width: 160px;text-align: left;}
+#article_class table tr td{height:38;line-height: 38px;width: 160px;}
+#article_class span{display:block;cursor: pointer;padding-left: 10px}
+#article_class span:hover{background-color: #93BFCC}
+#article_class span[selected="1"]{background-color:#6B8D9D}
+
+#article_show{position: relative;left:180px;margin-right:180px;top:0px;}
+
+#article_list{padding: 5px;padding-bottom: 50px;}
+#article_list span{display:block;height: 40px;line-height: 40px;padding-left: 5px;}
+#article_list span a{display:block;height: 40px;padding-left: 5px;color:#03f;}
+#article_list span a:hover{text-decoration-line: underline;}
+#article_list table{
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+#article_list table td{border-bottom: 1px solid #6B8D9D !important;}
+.article_mod{width: 50px}
+.article_mod button{padding: 6px 8px;border: 1px solid #ddd;background: #fff;border-radius: 3px;cursor: pointer;}
+
+#article_page{margin-left:5%;margin-top:-44px;height: 40px;line-height: 40px}
+#article_page input[type="button"]{
+  padding: 6px 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#article_list .step-links a{
+    display: inline;
+}
+#article_list .current{
+    display: inline;
+}

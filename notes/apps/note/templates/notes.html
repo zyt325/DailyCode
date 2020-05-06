@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}"/>
+{% endblock %}
+{% block js_head %}
+    <script type="text/javascript" src="http://lib.personer.tech/js/django_common.js"></script>
+    <script type="text/javascript" src="http://lib.personer.tech/js/ajax.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div id="body-bg">
+        <div id="container">
+            <div id="article_header">
+                <header>
+                    <!-- <span><button onclick="window.location.href = '/add.html'">ADD</button></span> -->
+                    <input style="width:120px" id="searchtext" type="text" placeholder="请输入搜索内容"/>
+                    <button onclick="getSearch(document.getElementById('searchtext').value,1) ">搜索</button>
+                    <span><button onclick="window.open('{% url 'add_article' %}')">ADD</button></span>
+                </header>
+            </div>
+            <div id="article_body">
+                <!-- 列出分类菜单 -->
+                <div id="article_class">
+                    <div>
+                        <table>
+                            <tr>
+                                <th><span class="class0" class_id="-1" selected="1">首页</span></th>
+                            </tr>
+                            {% for k,v in article_classes.items %}
+                                {% if v.sub|length == 0 %}
+                                    <tr>
+                                        <th><span class="class0" class_id="{{ k }}">{{ v.info.class_name }}</span></th>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <th>
+                                            <span class="class0" class_id="{{ k }}">{{ v.info.class_name }}</span>
+                                            <table style="display:none">
+                                                {% for i in v.sub %}
+                                                    <tr>
+                                                        <th><span class="class1"
+                                                                  class_id="{{ i.id }}">{{ i.class_name }}</span></th>
+                                                    </tr>
+                                                {% endfor %}
+                                            </table>
+                                        </th>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+                <div id="article_show">
+                    <!-- 列出对应分类的article list -->
+                    <div id="article_list">
+                        <table>
+                            {% for article in articles %}
+                                <tr>
+                                    <td>
+                                <span class="article">
+                                <a target="_blank" article_id="{{ article.article_id }}"
+                                   href="/media/articles/{{ article.file_name }}">
+                                {{ article.article_name }}</a>
+                                </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <!-- article list 的分页-->
+                    <div id="article_page">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="pagination">
+                                <span class="step-links">
+                                    {% if articles.has_previous %}
+                                        {% if class_id %}
+                                            <a href="?page=1&class_id={{ class_id }}">&laquo;</a>
+                                            <a href="?page={{ articles.previous_page_number }}&class_id={{ class_id }}">prev</a>
+                                        {% else %}
+                                            <a href="?page=1">&laquo;</a>
+                                            <a href="?page={{ articles.previous_page_number }}">prev</a>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    <span class="current">
+                                        Page {{ articles.number }} of {{ articles.paginator.num_pages }}.
+                                    </span>
+
+                                    {% if articles.has_next %}
+                                        {% if class_id %}
+                                            <a href="?page={{ articles.next_page_number }}&class_id={{ class_id }}">next</a>
+                                            <a href="?page={{ articles.paginator.num_pages }}&class_id={{ class_id }}">&raquo;</a>
+                                        {% else %}
+                                            <a href="?page={{ articles.next_page_number }}">next</a>
+                                            <a href="?page={{ articles.paginator.num_pages }}">&raquo;</a>
+                                        {% endif %}
+                                    {% endif %}
+                                </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js_body %}
+    <script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% endblock %}

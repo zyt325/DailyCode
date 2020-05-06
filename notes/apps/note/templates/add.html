@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/add.css' %}"/>
+<link rel="stylesheet" href="http://module.personer.tech/editor.md/examples/css/style.css"/>
+<link rel="stylesheet" href="http://module.personer.tech/editor.md/css/editormd.min.css"/>
+{% endblock %}
+
+{% block js_head %}
+<script type="text/javascript" src="http://lib.personer.tech/js/ajax.js"></script>
+{% endblock %}
+
+{% block body %}
+<div id="layout">
+    <header>
+        <span style="float:right">
+              <input class="btn" style="width:120px" id="secret" type="text" placeholder="请输入操作密码"/>
+              <button class="btn" onclick="window.open('{% url 'index_article' %}')">查看</button>
+              <button class="btn" id="SubmitTxt" onclick="submitTxt()">提交</button>
+        </span>
+        <span>
+            <input class="btn" id="ArticleTitle" type="text" placeholder="请输入标题"/>
+            <span></span>
+            <select id="ClassId">
+            {% for k,v in article_classes.items %}
+                {% if v.info.class_name == '默认' %}
+                <option value="{{ k }}" selected>{{ v.info.class_name }}</option>
+                {% else %}
+                <option value="{{ k }}">{{ v.info.class_name }}</option>
+                    {% if v.sub %}
+                        {% for t in v.sub %}
+                            <option value="{{ t.id }}">{{ t.class_name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            </select>
+        </span>
+    </header>
+    <!-- 显示markdown编辑器 -->
+    <div id="ArticleTxt">
+        <textarea style="display:none;"></textarea>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_body %}
+<script src="http://module.personer.tech/jquery/dist/jquery.min.js"></script>
+<script src="http://module.personer.tech/editor.md/editormd.min.js"></script>
+<script src="http://lib.personer.tech/js/ajax.js"></script>
+<script src="http://lib.personer.tech//js/common.js"></script>
+<script type="text/javascript" src="{% static 'js/add.js' %}"></script>
+{% endblock %}
