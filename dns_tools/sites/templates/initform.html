@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block css %}
+    <link href="http://work_libs.base-fx.com/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="http://module.personer.tech/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <style>
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0
+        }
+
+        ul li {
+            display: inline-table;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="container">
+        <div class="col">
+            {% if action == 'edit' %}
+            <form id="form_op" class="form-horizontal" action="/rr_{{ action }}/{{id}}/" method="post">
+            {% else %}
+            <form id="form_op" class="form-horizontal" action="/rr_{{ action }}/" method="post">
+            {% endif %}
+                <table>
+                    {{ Form.as_table() }}
+                </table>
+                <div>
+                    <button type="submit" class="btn btn-primary float-right">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block js_body %}
+        <script src="http://work_libs.base-fx.com/jquery/dist/jquery.min.js"></script>
+        <script src="http://work_libs.base-fx.com/popper.js/dist/umd/popper.min.js"></script>
+        <script src="http://work_libs.base-fx.com/bootstrap/dist/js//bootstrap.min.js"></script>
+
+    <!-- <script src="http://module.personer.tech/jquery/dist/jquery.min.js"></script>
+    <script src="http://module.personer.tech/popper.js/dist/umd/popper.min.js"></script>
+    <script src="http://module.personer.tech/bootstrap/dist/js//bootstrap.min.js"></script> -->
+    <script>
+        // css
+        $('#id_name').addClass('form-control');
+        $('#id_type').addClass('form-control');
+        $('#id_value').addClass('form-control');
+        $('#id_city').addClass('form-control');
+        $('#id_zone_name').addClass('form-control');
+
+
+        function change_zones(zones, city) {
+            if (!city) {
+                var city = $('#id_city').val();
+            }
+            $('#id_zone_name').empty()
+            for (i in zones[city]) {
+                $('#id_zone_name').append('<option value="' + zones[city][i][0] + '">' + zones[city][i][0] + '</option>')
+            }
+        }
+
+        var zones;
+        $.get('/zones/', function (data) {
+            change_zones(data);
+            zones = data;
+        });
+
+
+        // city and zone_name
+
+        $('#id_city').change(function () {
+            change_zones(zones);
+        });
+
+
+        // id = document.location.pathname.match('.*/([0-9]+)/$')[1];   //   /rr_op/61047243/
+        id=document.location.search.match('.*=([0-9]+)$')[1]           // /rr_op/?action=edit&id=61047243
+        if (id) {
+            $.get('/rr_get/' + id + '/', function (data) {
+                r = JSON.parse(data);
+                $('#id_name').val(r.name);
+                $('#id_value').val(r.value);
+                $('#id_type').find("option[value='" + r.type + "']").attr("selected", true);
+                $('#id_city').find("option[value='" + r.city + "']").attr("selected", true);
+                change_zones(zones, r.city);
+                $('#id_zone_name').find("option[value='" + r.zone_name + "']").attr("selected", true);
+                $('#id_city').attr("disabled","disabled");
+                $('#id_zone_name').attr("disabled","disabled");
+                $('#id_disabled_flag').attr("disabled","disabled");
+                $('#id_reversed_flag').attr("disabled","disabled");
+            })
+        }
+    </script>
+{% endblock %}
