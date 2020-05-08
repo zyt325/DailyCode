@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+    <link href="http://work_libs.base-fx.com/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://work_libs.base-fx.com/bootstrap-table/dist/bootstrap-table.min.css" rel="stylesheet">
+    <link href="http://work_libs.base-fx.com/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.css"
+          rel="stylesheet">
+    <link href="http://work_libs.base-fx.com/webfonts/all.css" rel="stylesheet">
+    <link href="{% static 'index.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="employee_status col-12">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link show active" data-toggle="tab" href="#employees">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#pendingIn">Pending-In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#pendingOut">Pending-Out</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#employeeOffice">employee office</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="employees">
+                        <table id="table">
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="pendingIn">
+                        <table class="table table-sm">
+                            <caption>employee status——Pending-In</caption>
+                            <thead class="thead-light">
+                            <tr>
+                                <th>username</th>
+                                <th>chinese_full_name</th>
+                                <th>department</th>
+                                <th>office</th>
+                                <th>start_date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in pending_in %}
+                                <tr>
+                                    <td>{{ item.username }}</td>
+                                    <td>{{ item.chinese_full_name }}</td>
+                                    <td>{{ item.department_code }}</td>
+                                    <td>{{ item.office_code }}</td>
+                                    <td>{{ item.start_date }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="pendingOut">
+                        <table class="table table-sm">
+                            <caption>employee status——Pending-Out</caption>
+                            <thead class="thead-light">
+                            <tr>
+                                <th>username</th>
+                                <th>chinese_full_name</th>
+                                <th>pic</th>
+                                <th>department</th>
+                                <th>office</th>
+                                <th>start_date</th>
+                                <th>end_date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in pending_out %}
+                                <tr>
+                                    <td>{{ item.username }}</td>
+                                    <td>{{ item.chinese_full_name }}</td>
+                                    <td><img
+                                            src="https://hr.base-fx.com/index.php/api/staffPhoto/username/{{ item.username }}">
+                                    </td>
+                                    <td>{{ item.department_code }}</td>
+                                    <td>{{ item.office_code }}</td>
+                                    <td>{{ item.start_date }}</td>
+                                    <td>{{ item.end_date }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="employeeOffice">
+                        <table class="table table-sm">
+                            <caption>employee status——employee office</caption>
+                            <thead class="thead-light">
+                            <tr>
+                                <th>城市</th>
+                                <th>数量</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in peoples_city %}
+                                <tr>
+                                    <td>{{ item.office_code }}</td>
+                                    <td>{{ item.count }}</td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                                <td>总计</td>
+                                <td>{{ peoples_count.count }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js_body %}
+    <script src="http://work_libs.base-fx.com/jquery/dist/jquery.min.js"></script>
+    <script src="http://work_libs.base-fx.com/popper.js/dist/umd/popper.min.js"></script>
+    <script src="http://work_libs.base-fx.com/bootstrap/dist/js//bootstrap.min.js"></script>
+    <script src="http://work_libs.base-fx.com/bootstrap-table/dist/bootstrap-table.min.js"></script>
+    <script src="http://work_libs.base-fx.com/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+    <script src="{% static 'index.js' %}"></script>
+{% endblock %}

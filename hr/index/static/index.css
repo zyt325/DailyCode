@@ -1,0 +1,8 @@
+img {
+    width: 79px;
+    height: 105px;
+}
+
+.check,.unlock,.enable{
+    margin-right: 6px;
+}
