@@ -25,7 +25,6 @@ urlpatterns = [
     path('login/',login_user),
     path('note/', include('note.urls')),
     # path('tool/', include('tools.urls')),
-    # path('picm/', include('picm.urls')),
     path('api/', include('api.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

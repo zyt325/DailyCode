@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'note',
     'api',
     'tools',
-    #    'picm',
 ]
 
 MIDDLEWARE = [
@@ -120,7 +119,6 @@ DATABASE_APPS_MAPPING = {
     'note': 'notes',
     'api': 'notes',
     'tools': 'tools',
-    'picm': 'picm',
 }
 
 # db_host='10.14.6.159'
@@ -129,8 +127,8 @@ db_host = '127.0.0.1'
 if DEBUG:
     db_host = db_host
     db_port = 3306
-    db_user = 'zyt'
-    db_pass = '325'
+    db_user = 'root'
+    db_pass = 'mysql325'
 else:
     db_host = db_host
     db_port = 3306
@@ -171,18 +169,6 @@ DATABASES = {
             'password': db_pass,
             'charset': 'utf8mb4',
             'database': 'tools',
-            'sql_mode': 'STRICT_ALL_TABLES',
-        }
-    },
-    'picm': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'host': db_host,
-            'port': db_port,
-            'user': db_user,
-            'password': db_pass,
-            'charset': 'utf8mb4',
-            'database': 'picm',
             'sql_mode': 'STRICT_ALL_TABLES',
         }
     }

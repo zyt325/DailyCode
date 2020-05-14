@@ -3,7 +3,7 @@ from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token, api_settings
 from rest_framework.documentation import include_docs_urls
 
-from . import note_views, tools_views, picm_views
+from . import note_views, tools_views
 
 router = routers.DefaultRouter()
 router.register(r'note_theme', note_views.ThemeViewSet, basename='note_theme')
@@ -19,9 +19,6 @@ router.register(r'tool_view', tools_views.ToolsViewViewSet, basename='tool_view'
 router.register(r'tool_categorys', tools_views.CategoryViewSet, basename='tool_categorys')
 router.register(r'tool_urls', tools_views.UrlsViewSet, basename='tool_urls')
 
-router.register(r'picm_category', picm_views.PicmCategoryViewSet, basename='picm_category')
-router.register(r'picm_path', picm_views.PicmPathViewSet, basename='picm_path')
-router.register(r'picm_categorys', picm_views.CategoryViewSet, basename='picm_categorys')
 
 # router.register('^test/(?P<category>.+)/$', tools_views.ToolsUrlbyCategoryList.as_view(),basename='test'),
 
