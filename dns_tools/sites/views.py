@@ -1,11 +1,43 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, HttpResponseRedirect, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from dns.LdapBackend import LDAPBackend
+
+
+def check_login(fn):
+    def wrapper(request, *args, **kwargs):
+        # request.session.clear()
+        request.session.clear_expired()
+        print(request.session.get_expiry_date())
+        if request.session.get('is_login_dns_username', False):
+            return fn(request, *args, *kwargs)
+        else:
+            return redirect('login')
+    return wrapper
+
+
+def login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        user = LDAPBackend().authenticate(username, password)
+        print(username, password, user)
+        if user:
+            request.session['is_login_dns_username'] = True
+            request.session.set_expiry(86400)
+            # request.session['username'] = username
+            return redirect('index')
+        else:
+            return render(request, 'login.html', {'notify': 'authentication failed'})
+    else:
+        request.session.clear_expired()
+        if request.session.get('is_login_dns_username', False):
+            return redirect('index')
+        return render(request, 'login.html')
 
 
 # Create your views here.
-
-
+@check_login
 def index(request):
     return render(request, 'index.html', context=locals())
 
@@ -13,8 +45,10 @@ def index(request):
 # init
 def zones_menu(request):
     from .models import DnsToolBindzones
-    zones = DnsToolBindzones.objects.using("dns").filter(type='Forward').order_by('parent_to_id', 'city').values('id', 'zone_name',
-                                                                                                    'city', 'parent_to')
+    zones = DnsToolBindzones.objects.using("dns").filter(type='Forward').order_by('parent_to_id', 'city').values('id',
+                                                                                                                 'zone_name',
+                                                                                                                 'city',
+                                                                                                                 'parent_to')
     # print(zones.query)
     result = []
     result_name = []
@@ -31,8 +65,10 @@ def zones_menu(request):
             result.append({'id': item['id'], 'parent': item['parent_to'], 'text': item['zone_name']})
     return JsonResponse(result, safe=False)
 
+
 def str_to_bool(str):
     return True if str.lower() == 'true' else False
+
 
 def rr_search(request):
     import json
@@ -71,7 +107,7 @@ def rr_search(request):
         elif k == 'name' and not fuzzy:
             print(1)
             rrs = rrs.filter(name=v)
-        elif k=='value' and fuzzy:
+        elif k == 'value' and fuzzy:
             rrs = rrs.filter(value__icontains=v)
         else:
             rrs = rrs.filter(value=v)
@@ -111,47 +147,52 @@ def zones(request):
         Zone = ZONE
     return JsonResponse(Zone, safe=False)
 
-def rr_get(request,id):
+
+def rr_get(request, id):
     from .models import DnsRrs
-    rrs=DnsRrs.objects.using('dns').get(id=id)
+    rrs = DnsRrs.objects.using('dns').get(id=id)
     return HttpResponse(rrs.toJSON())
+
 
 @csrf_exempt
 def rr_op(request):
     if request.method == 'GET':
         action = request.GET.get('action', '')
-        if action=='add':
+        if action == 'add':
             from .forms import addForm
             Form = addForm()
             return render(request, 'initform.html', locals())
-        elif action=='del':
+        elif action == 'del':
             ids = request.GET.getlist('ids[]', None)
             # print(ids)
             from .models import DnsToolBindrr
             from django.db.models import Q
             DnsToolBindrr.objects.using("dns").filter(Q(id__in=ids)).delete()
             return HttpResponse(1)
-        elif action=='edit':
+        elif action == 'edit':
             from .forms import addForm as editFrom
-            id=request.GET.get('id','')
+            id = request.GET.get('id', '')
             Form = editFrom()
             # print(id)
             return render(request, 'initform.html', locals())
-        elif action=='flush':
+        elif action == 'flush':
             return HttpResponse('test')
         else:
             return HttpResponse('no Action')
 
+
 def check_value(value):
-    if value.split('.')[-1]: value+='.'
+    if value.split('.')[-1]: value += '.'
     return value
+
 
 @csrf_exempt
 def rr_add(request):
     if request.method == 'POST':
         from .models import DnsToolBindrr, DnsToolBindzones
         query_zone = DnsToolBindzones.objects.using("dns").filter(type='Forward').values('id', 'city', 'zone_name',
-                                                                            'parent_to').order_by('parent_to')
+                                                                                         'parent_to').order_by(
+            'parent_to')
         zones = {}
         for i in query_zone:
             zones.setdefault(i['city'], {}).setdefault(i['zone_name'], {})
@@ -173,7 +214,7 @@ def rr_add(request):
         # print(name, type, value, city, zone_name, cname, disabled_flag, reversed_flag, user, update_date)
         # print(zones)
         rrs = {}
-        if type=='CNAME': value=check_value(value)
+        if type == 'CNAME': value = check_value(value)
         new_rr = DnsToolBindrr(domain_name=name, type=type, priority=None, value=value, disabled_flag=disabled_flag,
                                reversed_flag=reversed_flag, last_modified_date=update_date, last_modified_user=user,
                                related_to_id=None,
@@ -181,35 +222,39 @@ def rr_add(request):
         new_rr.save()
         if zones[city][zone_name]['parent_to']:
             for c in cname:
-                zone_parent_name=DnsToolBindzones.objects.using("dns").get(id=zones[city][zone_name]['parent_to']).zone_name
-                print(zone_name,zone_parent_name,c)
-                cname_value=name+'.'+zone_name
+                zone_parent_name = DnsToolBindzones.objects.using("dns").get(
+                    id=zones[city][zone_name]['parent_to']).zone_name
+                print(zone_name, zone_parent_name, c)
+                cname_value = name + '.' + zone_name
                 cname_value = check_value(cname_value)
                 new_rr = DnsToolBindrr(domain_name=name, type='CNAME', priority=None, value=cname_value,
                                        disabled_flag=disabled_flag,
                                        reversed_flag=reversed_flag, last_modified_date=update_date,
                                        last_modified_user=user,
                                        related_to_id=None,
-                                       zone=DnsToolBindzones.objects.using("dns").get(id=zones[c][zone_parent_name]['id']))
+                                       zone=DnsToolBindzones.objects.using("dns").get(
+                                           id=zones[c][zone_parent_name]['id']))
                 new_rr.save()
         else:
             for c in cname:
-                if c == city:continue
-                zone_parent_name=zone_name
-                print(zone_name,zone_parent_name,c)
-                cname_value=check_value(value)
+                if c == city: continue
+                zone_parent_name = zone_name
+                print(zone_name, zone_parent_name, c)
+                cname_value = check_value(value)
                 new_rr = DnsToolBindrr(domain_name=name, type='CNAME', priority=None, value=cname_value,
                                        disabled_flag=disabled_flag,
                                        reversed_flag=reversed_flag, last_modified_date=update_date,
                                        last_modified_user=user,
                                        related_to_id=None,
-                                       zone=DnsToolBindzones.objects.using("dns").get(id=zones[c][zone_parent_name]['id']))
+                                       zone=DnsToolBindzones.objects.using("dns").get(
+                                           id=zones[c][zone_parent_name]['id']))
                 new_rr.save()
 
         return HttpResponse("Success")
 
+
 @csrf_exempt
-def rr_edit(request,id):
+def rr_edit(request, id):
     if request.method == 'POST':
         import datetime
 
@@ -226,8 +271,8 @@ def rr_edit(request,id):
         user = request.POST.get('user', 'test')
         update_date = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
 
-        from .models import  DnsToolBindrr,DnsToolBindzones,DnsRrs
-        old_rr=DnsRrs.objects.using('dns').get(id=id)
+        from .models import DnsToolBindrr, DnsToolBindzones, DnsRrs
+        old_rr = DnsRrs.objects.using('dns').get(id=id)
         from django.db.models import Q
         # new_rr_zone=DnsToolBindzones.objects.using('dns').filter(Q(city=city) & Q(zone_name=zone_name)).values_list('id')
         # print(name,type,value,city,zone_name,cname,disabled_flag,reversed_flag,user,update_date)
@@ -244,5 +289,3 @@ def rr_edit(request,id):
                                                                 last_modified_user=user,
                                                                 last_modified_date=update_date)
         return HttpResponse("Success")
-
-

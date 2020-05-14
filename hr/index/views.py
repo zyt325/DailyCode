@@ -1,10 +1,43 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, HttpResponseRedirect, reverse
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Q, Count
+from work.LdapBackend import LDAPBackend
 
 
 # Create your views here.
+def check_login(fn):
+    def wrapper(request, *args, **kwargs):
+        # request.session.clear()
+        request.session.clear_expired()
+        print(request.session.get_expiry_date())
+        if request.session.get('is_login_hr_username', False):
+            return fn(request, *args, *kwargs)
+        else:
+            return redirect('login')
+    return wrapper
 
+
+def login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        user = LDAPBackend().authenticate(username, password)
+        print(username, password, user)
+        if user:
+            request.session['is_login_hr_username'] = True
+            request.session.set_expiry(86400)
+            # request.session['username'] = username
+            return redirect('index')
+        else:
+            return render(request, 'login.html', {'notify': 'authentication failed'})
+    else:
+        request.session.clear_expired()
+        if request.session.get('is_login_hr_username', False):
+            return redirect('index')
+        return render(request, 'login.html')
+
+
+@check_login
 def employee_status(request):
     from . import models
     pending_out = models.PeopleViewItd.objects.using("hr_new").filter(status="Pending-Out").order_by("office_code",
@@ -19,6 +52,7 @@ def employee_status(request):
     return render(request, "employee.html", locals())
 
 
+@check_login
 def employees(request):
     from . import models
     from django.core.paginator import Paginator
@@ -58,7 +92,7 @@ class AD():
     def cur_user(self):
         return self.conn.extend.standard.who_am_i()
 
-    def search_attr(self, attrs='cn', value='', search_range=0,reponse=0):
+    def search_attr(self, attrs='cn', value='', search_range=0, reponse=0):
         from ldap3 import SUBTREE
         attr = ['cn', 'uidNumber', 'displayName', 'department', 'userAccountControl', 'adminCount', 'member',
                 'lockoutTime']
@@ -119,42 +153,46 @@ class AD():
             result_info.setdefault('exist', False)
             return result_info
 
-    def set_user_attr(self, username,attrs):
+    def set_user_attr(self, username, attrs):
         from ldap3 import MODIFY_REPLACE
-        search_result = self.search_attr(value=username,reponse=1)
+        search_result = self.search_attr(value=username, reponse=1)
         # print(search_result)
         result_info = {}
         if search_result:
-            user_dn=search_result[0]['dn']
+            user_dn = search_result[0]['dn']
             print(user_dn)
-            modify_attr={}
-            for k,v in attrs.items():
-                modify_attr.setdefault(k,[]).append(MODIFY_REPLACE)
-                modify_attr.setdefault(k,[]).append([v])
-            self.conn.modify(user_dn,modify_attr)
-            result_info.setdefault('status',self.conn.result['result'])
+            modify_attr = {}
+            for k, v in attrs.items():
+                modify_attr.setdefault(k, []).append(MODIFY_REPLACE)
+                modify_attr.setdefault(k, []).append([v])
+            self.conn.modify(user_dn, modify_attr)
+            result_info.setdefault('status', self.conn.result['result'])
         else:
             result_info.setdefault('exist', False)
         return result_info
 
     def test(self):
         return self.conn
-    def unlock(self,username):
-        return self.set_user_attr(username,{'lockoutTime':0})
 
-    def enable_user(self,username):
+    def unlock(self, username):
+        return self.set_user_attr(username, {'lockoutTime': 0})
+
+    def enable_user(self, username):
         return self.set_user_attr(username, {'userAccountControl': 66048})
-    def disable_user(self,username):
+
+    def disable_user(self, username):
         return self.set_user_attr(username, {'userAccountControl': 66050})
 
+
+@check_login
 def employee(request):
-    action=request.GET.get('action','check')
+    action = request.GET.get('action', 'check')
     username = request.GET.get('username', 'None')
-    if action=='check':
+    if action == 'check':
         return JsonResponse(AD().check_user(username))
-    elif action=='unlock':
+    elif action == 'unlock':
         return JsonResponse(AD().unlock(username))
-    elif action=='enable':
+    elif action == 'enable':
         return JsonResponse(AD().enable_user(username))
-    elif action=='disable':
+    elif action == 'disable':
         return JsonResponse(AD().disable_user(username))
