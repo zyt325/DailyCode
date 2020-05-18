@@ -7,7 +7,9 @@ from Attendance import Attendance
 from datetime import datetime, timedelta
 from DB import DB
 from db import config
+from Logger import Logger
 
+logger = Logger(hander='file',hander_file_dir='/app/log').logger
 c = Company()
 a = Attendance()
 dbase = config.DATABASE
@@ -142,7 +144,7 @@ def insert_hrdb_people(employees):
         if i in ignore_users: continue
         u_info = c.employees[i]
         if u_info['city'] not in ['LA']:
-            print(u_info['username'])
+            logger.info("insert %s" % u_info['username'])
             if u_info['department'] == 'RMD': continue
             attendance = 1 if get_src_attendance(u_info['username']) else 0
             office_id = get_office(u_info['location_code'])
@@ -164,15 +166,16 @@ def sync_hrdb_people():
 
 
 def get_dest_attendance():
-    test_cur.execute("select username,attendance from %s.people " % dbase)
+    test_cur.execute("select username,attendance from %s.people" % dbase)
     result = {}
     for i in test_cur.fetchall():
+        # print(i)
         result[i['username']] = i['attendance']
     return result
 
 
 def get_dest_people():
-    test_cur.execute("select id from %s.people " % dbase)
+    test_cur.execute("select id from %s.people" % dbase)
     result = []
     for i in test_cur.fetchall():
         result.append(i['id'])
@@ -184,10 +187,9 @@ def update_attendance():
     for k, v in dest_attendance.items():
         src_attendance = 1 if get_src_attendance(k) else 0
         if int(src_attendance) != int(v):
-            print(k,v,src_attendance)
+            logger.info("update attendance: %s %s %s" % (k, v, src_attendance))
             test_cur.execute("update %s.people set attendance=%d where username='%s'" % (dbase, src_attendance, k))
     test_con.commit()
-
 
 
 def update_people():
@@ -195,17 +197,16 @@ def update_people():
     insert_people = set(src_people) - set(get_dest_people())
     delete_people = set(get_dest_people()) - set(src_people)
     if delete_people:
-        print('delete', delete_people)
+        logger.info("delete people: %s" % delete_people)
         for i in delete_people:
             test_cur.execute("delete from %s.people where id=%d " % (dbase, i))
         test_con.commit()
     if insert_people:
-        print('insert', insert_people)
+        logger.info("insert people:", insert_people)
         insert_hrdb_people(insert_people)
 
-
 # if __name__ == '__main__':
-#     update_attendance()
+#     get_dest_attendance()
 #     update_attendance()
 # update_people()
 # sync_hrdb_department()

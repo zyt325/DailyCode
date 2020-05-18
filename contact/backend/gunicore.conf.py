@@ -3,5 +3,7 @@ workers = 10
 threads = 2
 worker_class = "gevent"
 bind = "0.0.0.0:5000"
+accesslog = '/app/gunicorn.access.log'
+errorlog = '/app/gunicorn.error.log'
 reload = True
 pythonpath = '/app/address_book/backend'

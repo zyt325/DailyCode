@@ -147,6 +147,7 @@
         mounted() {
             this.get_city();
             this.get_deps();
+            this.get_city_deps('BJ');
             this.get_people_city('BJ');
         },
         methods: {

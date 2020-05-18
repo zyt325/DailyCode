@@ -4,9 +4,10 @@ import tempfile
 
 
 class Logger:
-    def __init__(self, name='itd', level='debug', hander='terminal'):
+    def __init__(self, name='itd', level='debug', hander='terminal', hander_file_dir=None):
         self.name = name
         self.level = self.Level(level)
+        self.hander_file_dir = hander_file_dir
         Hander = {'terminal': self.Hander_terminal(),
                   'email': self.Hander_email(), 'file': self.Hander_file()}
         self.logger = self.Logger_create(Hander[hander])
@@ -23,12 +24,13 @@ class Logger:
         return logger
 
     def Hander_file(self):
-        hander_f = logging.FileHandler(tempfile.mkstemp(prefix='itd_')[1])
+        hander_f = logging.FileHandler(tempfile.mkstemp(prefix='itd_',dir=self.hander_file_dir)[1])
         hander_f.setLevel(self.level)
         hander_f.setFormatter(self.Logger_format())
         return hander_f
 
-    def Hander_email(self, mailhost='smtp.base-fx.com', fromaddr="Logger@base-fx.com", toaddrs="zhangyt@base-fx.com", subject="脚本日志", credentials=('itd_mail', 'Eo8yGcdjy')):
+    def Hander_email(self, mailhost='smtp.base-fx.com', fromaddr="Logger@base-fx.com", toaddrs="zhangyt@base-fx.com",
+                     subject="脚本日志", credentials=('itd_mail', 'Eo8yGcdjy')):
         hander_e = logging.handlers.SMTPHandler(
             mailhost, fromaddr, toaddrs, subject, credentials=None)
         hander_e.setLevel(self.level)
