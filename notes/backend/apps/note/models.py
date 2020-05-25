@@ -45,7 +45,7 @@ class NoteArticle(models.Model):
                                  related_name="articles",
                                  verbose_name="文章分类")  # Field renamed because it was a Python reserved word.
     theme = models.ForeignKey(NoteTheme, models.CASCADE, default=default_theme,
-                              db_column='theme_id', verbose_name="主题分类")
+                              db_column='theme_id', verbose_name="主题分类",null=True)
 
     def __str__(self):
         return "%s %s %s %s" % (self.title, self.file_name, self.category, self.theme)

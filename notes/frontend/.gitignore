@@ -1,19 +1,6 @@
-__pycache__/
-*.py[cod]
-*.so
-migrations/
-media/
-upload/
-log/
-*.pyc
-*__pycache__/
-*migrations/
-
-# node
 .DS_Store
 node_modules
-dist
-editor.md
+/dist
 
 # local env files
 .env.local
@@ -32,4 +19,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
-
