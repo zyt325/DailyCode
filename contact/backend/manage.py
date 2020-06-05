@@ -5,9 +5,7 @@ from main import app
 from db.models import *
 from db.sync_hrdb_info import create_database, init_database, drop_table_book_view1, create_view_book_view, \
     drop_view_book_view, \
-    sync_hrdb_department, sync_hrdb_office, \
-    sync_hrdb_logical_company, sync_hrdb_title, \
-    sync_hrdb_people
+    sync_data, update_attendance
 
 manager = Manager(app)
 
@@ -57,12 +55,14 @@ def drop_book_view():
 
 @manager.command
 def sync_data_db():
-    """sync table data"""
-    sync_hrdb_department()
-    sync_hrdb_office()
-    sync_hrdb_title()
-    sync_hrdb_logical_company()
-    sync_hrdb_people()
+    """init table data"""
+    sync_data()
+
+
+@manager.command
+def update_kaoqin():
+    """update_attendance"""
+    update_attendance()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 proxy_allow_ips = '*'
-workers = 10
-threads = 2
+workers = 5
+threads = 1
 worker_class = "gevent"
 bind = "0.0.0.0:5000"
 accesslog = '/app/gunicorn.access.log'

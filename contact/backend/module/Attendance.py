@@ -36,6 +36,18 @@ class Attendance:
             else:
                 self.users['enabled'][result['username']] = result
 
+    def is_connected_db(self):
+        try:
+            self.db_con.ping()
+        except:
+            self.db_con, self.db_cur = self.DB.connect()
+
+    def is_connected_dbd(self):
+        try:
+            self.db_con.ping()
+        except:
+            self.dbd_con, self.dbd_cur = self.DB.connect(host='dbd.base-fx.com')
+
     def work_minutes_in_date(self, begin_date, end_date=None, user=None, production=True):
         if user: production = self.c.employee(user, 'is_production')
         if production:
@@ -75,7 +87,7 @@ class Attendance:
             result = self.dbd_cur.fetchone()
         else:
             return False
-        
+
         if result:
             return True
         else:
@@ -83,11 +95,14 @@ class Attendance:
 
     def user_was_present(self, user, begin_date, end_date=None, source='all'):
         present = [True]
+        self.is_connected_dbd()
+        self.is_connected_db()
         for current_date in _dates(begin_date, end_date):
             if source == 'all':
                 current_present = [False]
                 for current_source in self.sources:
-                    current_present.append(bool(self._user_was_present(user, specific_date=current_date, source=current_source)))
+                    current_present.append(
+                        bool(self._user_was_present(user, specific_date=current_date, source=current_source)))
                 present.append(max(current_present))
             else:
                 present.append(bool(self._user_was_present(user, specific_date=current_date, source=source)))
@@ -120,7 +135,7 @@ class Attendance:
                 from basefx.worktime
                 where username = '%s'
                 and start_time between '%s 06:00:00' and '%s 23:59:59' limit 1''' % (
-                current_date, expected_work_time, user, current_date, current_date)
+                    current_date, expected_work_time, user, current_date, current_date)
             elif source == 'zknet':
                 query = '''select min(c.checktime) as 'first_badge_swipe',timestampdiff(minute,'%s %s', min(c.checktime) ) as 'minutes_late' from zknet.checkinout c
                                  left join zknet.users u
@@ -203,7 +218,7 @@ class Attendance:
         for current_date in _dates(begin_date, end_date):
             workable_minutes = self.work_minutes_in_date(current_date, user=user)
             if workable_minutes <= 210:
-                work_minutes = self.work_time(user=user,begin_date=current_date)
+                work_minutes = self.work_time(user=user, begin_date=current_date)
                 if work_minutes > workable_minutes:
                     minutes += work_minutes - workable_minutes
         return minutes
@@ -220,6 +235,7 @@ class Attendance:
         return minutes
 
     def last_clocked_in(self, user, begin_date, end_date=None):
+        self.is_connected_db()
         # find user last clocked in time
         if end_date:
             query = '''select `checktime` from zknet.`checkinout` c

@@ -12,8 +12,30 @@ app.config.from_object(config)
 
 db.init_app(app)
 
-scheduler.init_app(app)
-scheduler.start()
+# scheduler.init_app(app)
+# scheduler.start()
+import atexit
+import fcntl
+
+
+def register_scheduler(app):
+    f = open("scheduler.lock", "wb")
+    try:
+        fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        scheduler = APScheduler()
+        scheduler.init_app(app)
+        scheduler.start()
+    except:
+        pass
+
+    def unlock():
+        fcntl.flock(f, fcntl.LOCK_UN)
+        f.close()
+
+    atexit.register(unlock)
+
+
+register_scheduler(app)
 
 
 @app.route('/')
@@ -107,3 +129,10 @@ def get_people_by_dep():
 if __name__ == "__main__":
     # app.run(host="0.0.0.0", debug=True)
     app.run()
+
+if __name__ != "__main__":
+    import logging
+
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
