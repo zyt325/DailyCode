@@ -298,6 +298,8 @@ def update_people():
 
 
 def sync_data():
+    is_connected_contact()
+    is_connected_db()
     sync_hrdb_department()
     sync_hrdb_office()
     sync_hrdb_title()
