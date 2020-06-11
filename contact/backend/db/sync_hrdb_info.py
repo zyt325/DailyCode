@@ -9,11 +9,10 @@ from DB import DB
 from db import config
 from Logger import Logger
 
-Logger = Logger(handler='file', handler_file_dir='/app/log')
-# Logger = Logger()
-logger = Logger.logger
+logger = Logger(handler='file', handler_file_dir='/app/log')
+# logger = Logger()
 c = Company()
-a = Attendance()
+
 dbase = config.DATABASE
 # These cities have no employees yet
 skip_cities = []
@@ -82,8 +81,7 @@ def create_view_book_view():
 
 
 def sync_hrdb_office():
-    logger.info("sync office")
-    Logger.remove()
+    logger.save_log(20, "sync office")
     for l in c.locations:
         res_src = c.locations[l]
         test_cur.execute("select id from %s.office where id=%d" % (dbase, res_src['id']))
@@ -96,8 +94,7 @@ def sync_hrdb_office():
 
 
 def sync_hrdb_title():
-    logger.info("sync title")
-    Logger.remove()
+    logger.save_log(20, "sync title")
     db_cur.execute(
         "select `id`,`english_name`,REGEXP_REPLACE(`english_name`, 'Senior|Junior', '') as 'wiki_title',REGEXP_REPLACE(`chinese_name`, '高级|Senior|初级', '') as 'wiki_title_cn' from hr_new.`titles`")
     res_src = db_cur.fetchall()
@@ -115,8 +112,7 @@ def sync_hrdb_title():
 
 
 def sync_hrdb_department():
-    logger.info("sync department")
-    Logger.remove()
+    logger.save_log(20, "sync department")
     for dep in c.departments:
         res_src = c.departments[dep]
         test_cur.execute("select id from %s.department where id=%d" % (dbase, res_src['id']))
@@ -131,8 +127,7 @@ def sync_hrdb_department():
 
 
 def sync_hrdb_logical_company():
-    logger.info("sync logical_company")
-    Logger.remove()
+    logger.save_log(20, "sync logical_company")
     db_cur.execute('select id,code from hr_new.logical_companies')
     res_src = db_cur.fetchall()
     for l in res_src:
@@ -146,6 +141,7 @@ def sync_hrdb_logical_company():
 
 
 def get_src_attendance(username):
+    a = Attendance()
     end_time = datetime.strptime('05-59', "%H-%M").time()
     begin_time = datetime.strptime('00-00', "%H-%M").time()
     now_time = datetime.now().time()
@@ -224,8 +220,7 @@ def insert_hrdb_people(i):
 
 
 def sync_hrdb_people():
-    logger.info("sync people")
-    Logger.remove()
+    logger.save_log(20, "sync people")
     for i in c.employees:
         ignore_users = get_ignore()
         if c.employees[i]['username'] in ignore_users: continue
@@ -236,11 +231,11 @@ def sync_hrdb_people():
             if res:
                 update_sql = """update %s.people set username='%s',gender='%s',mobile='%s',phone='%s',
                 wechat='%s',email='%s',attendance=%d,first_name='%s',last_name='%s',chinese_name='%s',start_date='%s',
-                level_id=%d,office_id=%d,department_id=%d,title_id=%d,logical_company_id=%d  where id=%d"""% (
+                level_id=%d,office_id=%d,department_id=%d,title_id=%d,logical_company_id=%d  where id=%d""" % (
                     dbase, res['username'], res['gender'], res['mobile'], res['phone'],
                     res['wechat'], res['email'], res['attendance'], res['first_name'], res['last_name'],
                     res['chinese_name'], res['start_date'], res['level_id'], res['office_id'], res['department_id'],
-                    res['title_id'], res['logical_company_id'],i)
+                    res['title_id'], res['logical_company_id'], i)
                 test_cur.execute(update_sql)
                 test_con.commit()
 
@@ -272,8 +267,7 @@ def update_attendance():
     for k, v in dest_attendance.items():
         src_attendance = 1 if get_src_attendance(k) else 0
         if int(src_attendance) != int(v):
-            logger.info("update attendance: %s %s %s" % (k, v, src_attendance))
-            Logger.remove()
+            logger.save_log(20, "update attendance: %s %s %s" % (k, v, src_attendance))
             test_cur.execute("update %s.people set attendance=%d where username='%s'" % (dbase, src_attendance, k))
     test_con.commit()
 
@@ -285,15 +279,13 @@ def update_people():
     insert_people = set(src_people) - set(get_dest_people())
     delete_people = set(get_dest_people()) - set(src_people)
     if delete_people:
-        logger.info("delete people: %s" % delete_people)
-        Logger.remove()
+        logger.save_log(20, "delete people: %s" % delete_people)
         for i in delete_people:
             test_cur.execute("delete from %s.people where id=%d " % (dbase, i))
         test_con.commit()
     if insert_people:
         for i in insert_people:
-            logger.info("insert people: %s" % delete_people)
-            Logger.remove()
+            logger.save_log(20, "insert people: %s" % delete_people)
             insert_hrdb_people(i)
 
 

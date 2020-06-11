@@ -7,7 +7,7 @@ JOBS = [
         'id': 'sync_data',
         'func': 'cron.apscheduler:sync_data',
         'trigger': 'cron',
-        'hour': '1-4',
+        'hour': '1-2',
         'minute': '*/30'
     },
     {
