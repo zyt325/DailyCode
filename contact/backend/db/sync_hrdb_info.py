@@ -285,7 +285,7 @@ def update_people():
         test_con.commit()
     if insert_people:
         for i in insert_people:
-            logger.save_log(20, "insert people: %s" % delete_people)
+            logger.save_log(20, "insert people: %s" % insert_people)
             insert_hrdb_people(i)
 
 
