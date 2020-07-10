@@ -5,9 +5,14 @@
     <title>Title</title>
 </head>
 <body>
-<link href="http://work_libs.base-fx.com/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="http://work_libs.base-fx.com/jquery/dist/jquery.min.js"></script>
-<script src="http://work_libs.base-fx.com/bootstrap/dist/js//bootstrap.min.js"></script>
+{#<link href="http://work_libs.base-fx.com/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">#}
+{#<script src="http://work_libs.base-fx.com/jquery/dist/jquery.min.js"></script>#}
+{#<script src="http://work_libs.base-fx.com/bootstrap/dist/js//bootstrap.min.js"></script>#}
+
+<link href="{{ static('bootstrap.min.css') }}" rel="stylesheet">
+<script src="{{ static('jquery.min.js') }}"></script>
+<script src="{{ static('popper.min.js') }}"></script>
+<script src="{{ static('bootstrap.min.js') }}"></script>
 
 <div class="wrapper fadeInDown">
     <div id="formContent">

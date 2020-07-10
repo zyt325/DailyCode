@@ -11,4 +11,5 @@ urlpatterns = [
     path('rr_op/', views.rr_op, name='op'),
     path('rr_add/', views.rr_add, name='add'),
     path('rr_edit/<int:id>/', views.rr_edit, name='edit'),
+    path('flush_rr/',views.flush_rr,name='flush'),
 ]

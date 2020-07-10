@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse, HttpResponseRedirect, redirec
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from dns.LdapBackend import LDAPBackend
+from dwebsocket.decorators import accept_websocket, require_websocket
 
 
 def check_login(fn):
@@ -13,6 +14,7 @@ def check_login(fn):
             return fn(request, *args, *kwargs)
         else:
             return redirect('login')
+
     return wrapper
 
 
@@ -154,6 +156,7 @@ def rr_get(request, id):
     return HttpResponse(rrs.toJSON())
 
 
+@check_login
 @csrf_exempt
 def rr_op(request):
     if request.method == 'GET':
@@ -176,7 +179,7 @@ def rr_op(request):
             # print(id)
             return render(request, 'initform.html', locals())
         elif action == 'flush':
-            return HttpResponse('test')
+            return render(request, 'flush.html')
         else:
             return HttpResponse('no Action')
 
@@ -289,3 +292,88 @@ def rr_edit(request, id):
                                                                 last_modified_user=user,
                                                                 last_modified_date=update_date)
         return HttpResponse("Success")
+
+
+@check_login
+@accept_websocket
+def flush_rr(request):
+    if not request.is_websocket():  # 判断是不是websocket连接
+        try:  # 如果是普通的http方法
+            message = request.GET['message']
+            return HttpResponse(message)
+        except:
+            return render(request, 'index.html')
+    else:
+        import paramiko
+        import datetime
+        import time
+        from io import StringIO
+        for message in request.websocket:
+            if not message:
+                break
+            message = message.decode('utf-8')  # 接收前端发来的数据
+            if message == 'flush_rr':  # 这里根据web页面获取的值进行对应的操作
+                command = 'cd /var/www/dns-tool.base-fx.com/dns_tool/bind_information_manager/ ;python3 flush_db.py'  # 这里是要执行的命令或者脚本
+
+                # 远程连接服务器
+                hostname = 'int-web01.base-fx.com'
+                username = 'root'
+
+                ssh = paramiko.SSHClient()
+                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+                # pky=pkey = paramiko.RSAKey.from_private_key_file('./basefx')
+                key_str = """-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAvcy/7EvZA8hPQpq2BTEL1hZy2L977F8EKyvQP2nLYZocKjBq
+5vryYO1Mth19VvZL0U8hV/suNsyX5TG57iQMke938UxJY6Kht+DAfc7vR7oBhTRv
+s6UOLh5sOcLTuAHNR29ElQ/C/SGI1+w0JS9WdYh+5A3VF9zurgIC5mU5Hwcms+o7
+TqMj6R9ABEFlF70FjMVKthnL2GdEI/bJmzzn3EF5G+1ke7fOP0lY63zbGlxIHptH
+B27AhrvOk6jNPhs+voAnxn/PYrJbmRXYAmH0+45i++sn7w+SNqn5jn7ap2j/MPs4
+JGo7FV12OhV0AwuF9bT+efmeaU8blOtMgDwzbQIDAQABAoIBAHFgGVUhiaTExvPW
+TtyTC6r7BeeLmo77wxW2ulLm82J+GEzrVzBavuY/Wg9/VhvYTDnftt9DX7vEQwfZ
+yGMEja2vCkrNcxldUJTyYInGTxDdf4L+a6s38VyDN8rZIndMPD9rq+AO5j8nBQNW
+SV/dAxx6SLIZwSzcAIdZFDpkRNbO+wQBRzupXh6SCv7P+PZPi09dXSFQFEyK6mqH
+w6GTrWFGjyoQaDDXpotMfgxgK++23tV8aSI7ZldSN8OJCjYpB4xWr48Jwg439WD+
+xVw+4AFUC9OOZi4W/gFKKT6K2a6s5L3erudsjj6+5Fxk2/Lmq711MrgIOqTB29jT
+fkk/g4ECgYEA6PGOMH4lb2gSwdAUhTr//u4Bhir3nSU7EgxHSzNu0y9CP7F6e/QF
+K/Wg5M7+IQXHYJw46Zorm1rhlPppIZeNf0swkFgYTvmChZGFFU1MpkX4uuzSTZLM
+LwXTcejqqa7vmbQr5LcXjFoOeYLfR9eclLJcZM5NhuFI5nmEa63l5WUCgYEA0JX+
+vqN/LzUqdXYz4tRJS8lsMLz0ebA41h1SOrpp7o7+wCWvPPUJI78Ovs95T3A+fZjA
+5+lf3KwLgtPByngNHzqdHzpXzNeb8jiBJ8+oSGdz7q+VMVRojl/XYGFcRA4q9Hh4
+tupAx7dgpiqVMv+M+s9BKY2SfiOuoR5V9djdWWkCgYEAqz8hS88A0ETPPUIuQ7+b
+AJuR7UNbI2CCa4MxSjx2ZbRhXJeptsQupSF+9ZaiRj6MUx6lzD31ftEx8yaf8P0M
+HZ92BTduL2jIJk9TadSY28em0ixVcofPqWX8Csqy8KlVJUbJ2esr2Zc++t9WK+d7
+CemReN4dKmImCKEe01ZVIu0CgYEAgWcs3XRtKQpgxvKICgcNWdkiJ7JyMTRkbmFO
+bGTN51QLM4Wti7Gw895J9ZKdfezyt9SWiMm90RdjJMzegw+rhF5Gr+LwKYLxmnn3
+lo07p3+W6tM/SZVGMF3BLmf4Z7gqafR7X29AtSZM7YmpejQUcF033eGYqmzUn9xE
+E/twh1ECgYAFqFvEoPLr4rAgtnIqdx0VI7GZLx4lspaq56vmUBUTvdtLt3HW/UnN
+7sHG3D8nwYR4HezIBHoB42Iw0F7f6lzgjhCnlrfwkkcfVjebdgLW8rvj9Nj1tq1h
+RVPOQSuFkKaIARo8aLbe3XhyAhEi3r2cfnoDpOnxZ7OTYndj57ztaw==
+-----END RSA PRIVATE KEY-----"""
+                pkey = paramiko.RSAKey(file_obj=StringIO(key_str))
+                ssh.connect(hostname=hostname, username=username, pkey=pkey)
+                chan = ssh.invoke_shell()
+                chan.settimeout(30)
+                chan.send(command + '\n')
+                space_count = 0
+
+                # dt=datetime.datetime.now()
+                # f=open(dt.strftime("%Y%m%d-%H%M%S"),'w+')
+                while True:
+                    chan.send(" ")
+                    result = chan.recv(4096).decode()
+                    # print(result)
+                    if len(result) == 1:
+                        time.sleep(1)
+                        space_count += 1
+                    else:
+                        space_count = 0
+                        # f.writelines(result.strip())
+                        request.websocket.send(result.strip())  # 发送消息到客户端
+                    if space_count > 10:
+                        break
+                # f.close()
+                chan.close()
+                ssh.close()  # 关闭ssh连接
+            else:
+                request.websocket.send('小样儿，没权限!!!'.encode('utf-8'))

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>flush records</title>
+    <script src="{{ static('jquery.min.js') }}"></script>
+    <script type="text/javascript">
+        var socket = new WebSocket("ws://" + window.location.host + "/flush_rr/");
+        console.log(socket);
+        socket.onopen = function () {
+            socket.send('flush_rr');//发送数据到服务端
+        };
+        socket.onmessage = function (e) {
+            $('#messagecontainer').append(e.data+'<br/>');
+        };
+    </script>
+    <style>
+        pre{
+            word-wrap: break-word;
+            margin: 0;
+            display: block;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+<div style="margin: 20px;">
+    <pre id="messagecontainer" class="console-output">
+    </pre>
+</div>
+</body>
+</html>

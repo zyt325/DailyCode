@@ -96,7 +96,7 @@ else:
     db_host = '127.0.0.1'
     db_port = 3306
     db_user = 'root'
-    db_pass = ''
+    db_pass = 'mysql325'
 
 DATABASES = {
     'default': {
@@ -154,14 +154,15 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_ROOT = os.path.join(BASE_DIR, 'sites/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'sites/static')
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, 'sites/static'),
 # ]
+

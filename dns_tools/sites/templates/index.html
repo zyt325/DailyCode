@@ -7,20 +7,11 @@
     {#          rel="stylesheet">#}
     {#    <link href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" rel="stylesheet">#}
     {#    <link href="https://cdn.bootcss.com/jstree/3.3.8/themes/default/style.min.css" rel="stylesheet">#}
-    
-    <link href="http://work_libs.base-fx.com/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://work_libs.base-fx.com/bootstrap-table/dist/bootstrap-table.min.css" rel="stylesheet">
-    <link href="http://work_libs.base-fx.com/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.css"
-          rel="stylesheet">
-    <link href="http://work_libs.base-fx.com/webfonts/all.css" rel="stylesheet">
-    <link href="http://work_libs.base-fx.com/jstree/dist/themes/default/style.min.css" rel="stylesheet">
-
-    <!-- <link href="http://module.personer.tech/bootstrap-4.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://module.personer.tech/bootstrap-table/dist/bootstrap-table.min.css" rel="stylesheet">
-    <link href="http://module.personer.tech/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.css"
-          rel="stylesheet">
-    <link href="http://module.personer.tech/webfonts/all.css" rel="stylesheet">
-    <link href="http://module.personer.tech/jstree/dist/themes/default/style.min.css" rel="stylesheet"> -->
+    <link href="{{ static('bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ static('bootstrap-table.min.css') }}" rel="stylesheet">
+    <link href="{{ static('bootstrap-table-filter-control.min.css') }}" rel="stylesheet">
+    <link href="{{ static('all.css') }}" rel="stylesheet">
+    <link href="{{ static('style.min.css') }}" rel="stylesheet">
 
     <style>
         .bd-placeholder-img {
@@ -76,22 +67,14 @@
     {#    <script src="https://cdn.bootcss.com/bootstrap-table/1.15.4/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>#}
     {#    <script src="https://cdn.bootcss.com/bootstrap-table/1.15.4/extensions/editable/bootstrap-table-editable.min.js"></script>#}
     {#    <script src="https://cdn.bootcss.com/jstree/3.3.8/jstree.min.js"></script>#}
-    
-    <script src="http://work_libs.base-fx.com/jquery/dist/jquery.min.js"></script>
-    <script src="http://work_libs.base-fx.com/popper.js/dist/umd/popper.min.js"></script>
-    <script src="http://work_libs.base-fx.com/bootstrap/dist/js//bootstrap.min.js"></script>
-    <script src="http://work_libs.base-fx.com/bootstrap-table/dist/bootstrap-table.min.js"></script>
-    <script src="http://work_libs.base-fx.com/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
-    <script src="https://cdn.bootcss.com/layer/2.3/layer.js"></script>
-    <script src="http://work_libs.base-fx.com/jstree/dist/jstree.min.js"></script>
-    
-    <!-- <script src="http://module.personer.tech/jquery/dist/jquery.min.js"></script>
-    <script src="http://module.personer.tech/popper.js/dist/umd/popper.min.js"></script>
-    <script src="http://module.personer.tech/bootstrap-4.2.1/dist/js//bootstrap.min.js"></script>
-    <script src="http://module.personer.tech/bootstrap-table/dist/bootstrap-table.min.js"></script>
-    <script src="http://module.personer.tech/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
-    <script src="http://module.personer.tech/layer/2.3/layer.js"></script>
-    <script src="http://module.personer.tech/jstree/dist/jstree.min.js"></script> -->
+
+    <script src="{{ static('jquery.min.js') }}"></script>
+    <script src="{{ static('popper.min.js') }}"></script>
+    <script src="{{ static('bootstrap.min.js') }}"></script>
+    <script src="{{ static('bootstrap-table.min.js') }}"></script>
+    <script src="{{ static('bootstrap-table-filter-control.min.js') }}"></script>
+    <script src="{{ static('layer.min.js') }}"></script>
+    <script src="{{ static('jstree.min.js') }}"></script>
 
     <script src="{{ static('jquerysession.js') }}"></script>
     <script src="{{ static('index.js') }}"></script>

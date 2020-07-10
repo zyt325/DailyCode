@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block css %}
-    <link href="http://work_libs.base-fx.com/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- <link href="http://module.personer.tech/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <link href="{{ static('bootstrap.min.css') }}" rel="stylesheet">
     <style>
         ul {
             list-style-type: none;
@@ -33,13 +32,9 @@
     </div>
 {% endblock %}
 {% block js_body %}
-        <script src="http://work_libs.base-fx.com/jquery/dist/jquery.min.js"></script>
-        <script src="http://work_libs.base-fx.com/popper.js/dist/umd/popper.min.js"></script>
-        <script src="http://work_libs.base-fx.com/bootstrap/dist/js//bootstrap.min.js"></script>
-
-    <!-- <script src="http://module.personer.tech/jquery/dist/jquery.min.js"></script>
-    <script src="http://module.personer.tech/popper.js/dist/umd/popper.min.js"></script>
-    <script src="http://module.personer.tech/bootstrap/dist/js//bootstrap.min.js"></script> -->
+        <script src="{{ static('jquery.min.js') }}"></script>
+        <script src="{{ static('popper.min.js') }}"></script>
+        <script src="{{ static('bootstrap.min.js') }}"></script>
     <script>
         // css
         $('#id_name').addClass('form-control');
