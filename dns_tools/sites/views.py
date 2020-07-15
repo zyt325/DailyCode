@@ -86,7 +86,10 @@ def rr_search(request):
     fuzzy = str_to_bool(request.GET.get('fuzzy', 'True'))
     sort = request.GET.get('sort', 'name')
     sort_order = request.GET.get('order', 'asc')
-    rrs = DnsRrs.objects.using("dns").filter(Q(direction=direction)).order_by('name')
+    if sort_order == 'asc':
+        rrs = DnsRrs.objects.using("dns").filter(Q(direction=direction)).order_by('%s' % sort)
+    else:
+        rrs = DnsRrs.objects.using("dns").filter(Q(direction=direction)).order_by('-%s' % sort)
     # print(fuzzy,type(fuzzy))
     if not zone_id:
         rrs = rrs.filter(Q(zone_name__icontains=zone_name))
