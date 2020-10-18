@@ -37,8 +37,8 @@ function add_goTop() {
   container.appendChild(top_ico);
 }
 
-loadScript("http://lib.personer.tech/js/ajax.js");
-loadScript("http://lib.personer.tech/js/common.js");
+loadScript("http://lib.personer.website/js/ajax.js");
+loadScript("http://lib.personer.website/js/common.js");
 
 window.onload = function () {
   //login_auth();

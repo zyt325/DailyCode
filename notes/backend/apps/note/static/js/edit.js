@@ -15,7 +15,7 @@ $(function () {
     height: AritcleHeight,
     markdown: "",
     // syncScrolling: "single",
-    path: "http://module.personer.tech/editor.md/lib/", //你的path路径（原资源文件中lib包在我们项目中所放的位置）
+    path: "http://module.personer.website/editor.md/lib/", //你的path路径（原资源文件中lib包在我们项目中所放的位置）
 
     placeholder: '本编辑器支持Markdown编辑，左边编写，右边预览',
 
