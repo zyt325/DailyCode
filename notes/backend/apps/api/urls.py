@@ -48,10 +48,10 @@ def manual_token(request):
 
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('docs/', include_docs_urls(title='docs')),
     path('token-manual/', manual_token),
     path('token-auth/', obtain_jwt_token),
     path('token-refresh/', refresh_jwt_token),
     path('token-verify/', verify_jwt_token),
-    path('v1/', include(router.urls)),
 ]

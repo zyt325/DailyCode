@@ -11,7 +11,7 @@ class NoteTheme(models.Model):
     add_time = models.DateTimeField(default=timezone.now, verbose_name="添加时间")
 
     def __str__(self):
-        return "%s %s" % (self.id, self.name)
+        return self.name
 
     class Meta:
         db_table = "%stheme" % table_prefix
@@ -28,7 +28,7 @@ class NoteCategory(models.Model):
     add_time = models.DateTimeField(default=timezone.now, verbose_name="添加时间")
 
     def __str__(self):
-        return "%s %s %s" % (self.id, self.name, self.parent_category)
+        return "%s %s" % (self.name, self.type)
 
     class Meta:
         db_table = "%sclass" % table_prefix

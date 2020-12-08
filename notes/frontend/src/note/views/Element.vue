@@ -14,6 +14,15 @@
         >
         </el-input>
         <el-button icon="el-icon-search" @click="get_article()"></el-button>
+        <el-tooltip :content="fuzzy" placement="top">
+          <el-switch
+            v-model="fuzzy"
+            active-value="fuzzy"
+            inactive-value="accurate"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+        </el-tooltip>
         <el-button icon="el-icon-delete" @click="clear_search()"></el-button>
         <router-link target="_blank" :to="{path:'add/'}">
           <el-button icon="el-icon-document-add"></el-button>
@@ -101,157 +110,164 @@
 </template>
 
 <script>
-    import "element-ui/lib/theme-chalk/index.css";
-    import {token} from "../commonFunction/token"
+  import "element-ui/lib/theme-chalk/index.css";
+  import {token} from "../commonFunction/token"
 
-    export default {
-        data() {
-            return {
-                category_list: [],
-                article_list: [],
-                search_word: "",
-                isCollapse: false,
-                aside: {width: 300},
-                page: {
-                    total: 0,
-                    category: 0,
-                    size: 15,
-                    offset: 0,
-                    cur_page: 1
-                }
-            };
-        },
-        mounted() {
-            if (this.get_session_key("tools_token")) {
-                this.get_category();
-                this.get_article();
-            }
-        },
-        mixins: [token],
-        methods: {
-            toggleCollapsed() {
-                this.isCollapse = !this.isCollapse;
-                if (this.isCollapse) {
-                    this.aside.width = 0;
-                } else {
-                    this.aside.width = 300;
-                }
-            },
-            clear_search() {
-                this.search_word = '';
-                this.get_article();
-            },
-            get_category() {
-                var _this = this;
-                this.axios
-                    .get("/api/v1/note_categorys?format=json", {
-                        headers: {
-                            Authorization: "JWT ".concat(this.get_session_key("tools_token"))
-                        }
-                    })
-                    .then(function (res) {
-                        _this.category_list = res.data;
-                        // console.log(_this.category_list);
-                    })
-                    .catch(function (err) {
-                        _this.get_category()
-                    })
-            },
-            get_article() {
-                var _this = this;
-                var params = {};
-                if (_this.search_word) {
-                    params.search = _this.search_word;
-                }
-                {
-                    (params.limit = _this.page.size), (params.offset = 0);
-                }
-                this.axios
-                    .get("/api/v1/note_articles/", {
-                        params: params,
-                        headers: {
-                            Authorization: "JWT ".concat(this.get_session_key("tools_token"))
-                        }
-                    })
-                    .then(function (res) {
-                        _this.article_list = res.data.results;
-                        _this.page.total = res.data.count;
-                        // console.log(_this.article_list);
-                    });
-            },
-            handleSelect(key, keyPath) {
-                var _this = this;
-                var params = {};
-                {
-                    (params.category = key), (params.limit = _this.page.size), (params.offset = 0);
-                }
-                _this.axios
-                    .get("/api/v1/note_articles/", {
-                        params: params,
-                        headers: {
-                            Authorization: "JWT ".concat(this.get_session_key("tools_token"))
-                        }
-                    })
-                    .then(function (res) {
-                        _this.article_list = res.data.results;
-                        _this.page.total = res.data.count;
-                        _this.page.category = key;
-                    });
-            },
-            handleCurrentChange(val) {
-                var _this = this;
-                var params = {};
-                if (_this.page.category != 0) {
-                    params.category = _this.page.category;
-                }
-                if (_this.search_word) {
-                    params.search = _this.search_word;
-                }
-                {
-                    (params.limit = _this.page.size),
-                        (params.offset = _this.page.size * (val - 1));
-                }
-
-                _this.axios
-                    .get("/api/v1/note_articles/", {
-                        params: params,
-                        headers: {
-                            Authorization: "JWT ".concat(this.get_session_key("tools_token"))
-                        }
-                    })
-                    .then(function (res) {
-                        _this.article_list = res.data.results;
-                        _this.page.total = res.data.count;
-                    });
-            },
-            handleSizeChange(val) {
-                var _this = this;
-                var params = {};
-
-                if (_this.search_word) {
-                    params.search = _this.search_word;
-                }else if (_this.page.category != 0) {
-                    params.category = _this.page.category;
-                }
-
-                {
-                    (params.limit = val), (params.offset = _this.page.offset);
-                }
-                _this.axios
-                    .get("/api/v1/note_articles/", {
-                        params: params,
-                        headers: {
-                            Authorization: "JWT ".concat(this.get_session_key("tools_token"))
-                        }
-                    })
-                    .then(function (res) {
-                        _this.article_list = res.data.results;
-                        _this.page.total = res.data.count;
-                        _this.page.size = val;
-                    });
-            }
+  export default {
+    data() {
+      return {
+        fuzzy: 'fuzzy',
+        category_list: [],
+        article_list: [],
+        search_word: "",
+        isCollapse: false,
+        aside: {width: 300},
+        page: {
+          total: 0,
+          category: 0,
+          size: 15,
+          offset: 0,
+          cur_page: 1
         }
-    };
+      };
+    },
+    mounted() {
+      if (this.get_session_key("tools_token")) {
+        this.get_category();
+        this.get_article();
+      }
+    },
+    mixins: [token],
+    methods: {
+      toggleCollapsed() {
+        this.isCollapse = !this.isCollapse;
+        if (this.isCollapse) {
+          this.aside.width = 0;
+        } else {
+          this.aside.width = 300;
+        }
+      },
+      clear_search() {
+        this.search_word = '';
+        this.get_article();
+      },
+      get_category() {
+        var _this = this;
+        this.axios
+          .get("/api/v1/note_categorys?format=json", {
+            headers: {
+              Authorization: "JWT ".concat(this.get_session_key("tools_token"))
+            }
+          })
+          .then(function (res) {
+            _this.category_list = res.data;
+            // console.log(_this.category_list);
+          })
+          .catch(function (err) {
+            _this.get_category()
+          })
+      },
+      get_article() {
+        var _this = this;
+        var params = {};
+
+        if (_this.fuzzy !== 'fuzzy') {
+          console.log(_this.fuzzy)
+        } else {
+          if (_this.search_word) {
+            params.search = _this.search_word;
+          }
+        }
+
+        {
+          (params.limit = _this.page.size), (params.offset = 0);
+        }
+        this.axios
+          .get("/api/v1/note_articles/", {
+            params: params,
+            headers: {
+              Authorization: "JWT ".concat(this.get_session_key("tools_token"))
+            }
+          })
+          .then(function (res) {
+            _this.article_list = res.data.results;
+            _this.page.total = res.data.count;
+            // console.log(_this.article_list);
+          });
+      },
+      handleSelect(key, keyPath) {
+        var _this = this;
+        var params = {};
+        {
+          (params.category = key), (params.limit = _this.page.size), (params.offset = 0);
+        }
+        _this.axios
+          .get("/api/v1/note_articles/", {
+            params: params,
+            headers: {
+              Authorization: "JWT ".concat(this.get_session_key("tools_token"))
+            }
+          })
+          .then(function (res) {
+            _this.article_list = res.data.results;
+            _this.page.total = res.data.count;
+            _this.page.category = key;
+          });
+      },
+      handleCurrentChange(val) {
+        var _this = this;
+        var params = {};
+        if (_this.page.category != 0) {
+          params.category = _this.page.category;
+        }
+        if (_this.search_word) {
+          params.search = _this.search_word;
+        }
+        {
+          (params.limit = _this.page.size),
+            (params.offset = _this.page.size * (val - 1));
+        }
+
+        _this.axios
+          .get("/api/v1/note_articles/", {
+            params: params,
+            headers: {
+              Authorization: "JWT ".concat(this.get_session_key("tools_token"))
+            }
+          })
+          .then(function (res) {
+            _this.article_list = res.data.results;
+            _this.page.total = res.data.count;
+          });
+      },
+      handleSizeChange(val) {
+        var _this = this;
+        var params = {};
+
+        if (_this.search_word) {
+          params.search = _this.search_word;
+        } else if (_this.page.category != 0) {
+          params.category = _this.page.category;
+        }
+
+        {
+          (params.limit = val), (params.offset = _this.page.offset);
+        }
+        _this.axios
+          .get("/api/v1/note_articles/", {
+            params: params,
+            headers: {
+              Authorization: "JWT ".concat(this.get_session_key("tools_token"))
+            }
+          })
+          .then(function (res) {
+            _this.article_list = res.data.results;
+            _this.page.total = res.data.count;
+            _this.page.size = val;
+          });
+      }
+    }
+  };
 </script>
 
 <style>

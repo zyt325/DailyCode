@@ -26,7 +26,22 @@ class MultiDBModelAdmin(admin.ModelAdmin):
         # on the 'other' database.
         return super().formfield_for_manytomany(db_field, request, using=self.using, **kwargs)
 
+class NoteCategoryAdmin(MultiDBModelAdmin):
+    list_display = ['name','type','parent_category']
+    list_filter = ['type']
+
+class NoteArticleAdmin(MultiDBModelAdmin):
+    list_display = ['title','file_name','category','theme']
+    list_filter = ['category']
+    list_per_page = 20
+    search_fields = ['title','body']
+
+class NoteThemeAdmin(MultiDBModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+    list_per_page = 20
+
 from .models import NoteCategory,NoteArticle,NoteTheme
-admin.site.register(NoteCategory,MultiDBModelAdmin)
-admin.site.register(NoteArticle,MultiDBModelAdmin)
-admin.site.register(NoteTheme,MultiDBModelAdmin)
+admin.site.register(NoteCategory,NoteCategoryAdmin)
+admin.site.register(NoteArticle,NoteArticleAdmin)
+admin.site.register(NoteTheme,NoteThemeAdmin)

@@ -20,7 +20,9 @@ import {
   Link,
   Cascader,
   Message,
-  Pagination
+  Pagination,
+  Switch,
+  Tooltip
 } from "element-ui";
 
 Vue.use(Container);
@@ -38,6 +40,8 @@ Vue.use(TableColumn);
 Vue.use(Link);
 Vue.use(Cascader);
 Vue.use(Pagination);
+Vue.use(Switch);
+Vue.use(Tooltip);
 Vue.config.productionTip = false;
 
 Vue.prototype.$message = Message;

@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_jwt',
+    'dj_rest_auth',
     'django_filters',
     'note',
     'api',
@@ -87,15 +89,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'PAGE_SIZE': 10,   #可选可不选，如果在此处填写，则优先级大于自定义里面的page
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     # jwt
     'DEFAULT_PERMISSION_CLASSES': (
-        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ),
 }
 import datetime
@@ -114,6 +116,7 @@ DATABASE_APPS_MAPPING = {
     # 'app_name':'database_name'
     'admin': 'default',
     'auth': 'default',
+    'authtoken': 'default',
     'contenttypes': 'default',
     'sessions': 'default',
     'note': 'notes',
@@ -121,9 +124,9 @@ DATABASE_APPS_MAPPING = {
     'tools': 'tools',
 }
 
-# db_host='10.14.6.159'
+db_host = '10.14.6.159'
 # db_host='note.personer.tech'
-db_host = '127.0.0.1'
+# db_host = '127.0.0.1'
 if DEBUG:
     db_host = db_host
     db_port = 3306
@@ -225,10 +228,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 if not os.path.exists(MEDIA_ROOT):
     os.makedirs(MEDIA_ROOT)
-
-PICM_ROOT = MEDIA_ROOT + '/picm/'
-if not os.path.exists(PICM_ROOT):
-    os.makedirs(PICM_ROOT)
 
 # uploads    path:  MEDIA_ROOT/uploads
 # article    path:  MEDIA_ROOT/articles

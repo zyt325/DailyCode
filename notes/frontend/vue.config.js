@@ -1,6 +1,6 @@
 const path = require("path");
-// const target_host = "127.0.0.1:8002";
-const target_host="note.personer.tech";
+const target_host = "127.0.0.1:8002";
+//const target_host="note.personer.tech";
 
 module.exports = {
   devServer: {
