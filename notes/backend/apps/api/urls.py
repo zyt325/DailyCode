@@ -11,6 +11,7 @@ router.register(r'note_category_article', note_views.Category_ArticleViewSet, ba
 router.register(r'note_categorys', note_views.CategorysViewSet, basename='note_categorys')
 router.register(r'note_category', note_views.CategoryViewSet, basename='note_category')
 router.register(r'note_articles', note_views.ArticlesViewSet, basename='note_articles')
+router.register(r'note_articles-title', note_views.ArticlesByTitleViewSet, basename='note_articles-title')
 router.register(r'note_article', note_views.ArticleViewSet, basename='note_article')
 
 router.register(r'tool_category', tools_views.ToolsCategoryViewSet, basename='tool_category')

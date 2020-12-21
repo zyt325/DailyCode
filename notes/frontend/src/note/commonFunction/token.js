@@ -2,7 +2,7 @@ export const token = {
   methods: {
     set_session_key(key, value, ttl_s) {
       var ttl_ms = Date.now() + 1000 * 60 * ttl_s;
-      var data = {value: value, expirse: new Date(ttl_ms).getTime()};
+      var data = { value: value, expirse: new Date(ttl_ms).getTime() };
       sessionStorage.setItem(key, JSON.stringify(data));
     },
     get_session_key(key) {
@@ -23,7 +23,7 @@ export const token = {
       var _this = this;
       this.axios
         .post(
-          "/api/token-manual/",
+          "/api/v1/token-manual/",
           {
             username: "test",
             password: this.$CryptoJS.AES.encrypt("test6666", "tools").toString()

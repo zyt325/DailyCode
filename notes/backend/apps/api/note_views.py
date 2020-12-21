@@ -46,6 +46,16 @@ class ArticlesViewSet(viewsets.ModelViewSet):
     filter_fields = ['category']
     search_fields = ['title','body']
 
+class ArticlesByTitleViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = NoteArticle.objects.all()
+    serializer_class = ArticlesSerializer
+    pagination_class = LimitOffsetPagination
+    filter_backends = [DjangoFilterBackend,SearchFilter]
+    filter_fields = ['category']
+    search_fields = ['title']
 
 class Category_ArticleViewSet(viewsets.ModelViewSet):
     queryset = NoteCategory.objects.all()
