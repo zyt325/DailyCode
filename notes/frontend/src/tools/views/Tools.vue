@@ -147,7 +147,7 @@
             }
 
             function get_token() {
-                _this.axios.post('/api/token-manual/', {
+                _this.axios.post('/api/v1/token-manual/', {
                         username: 'test',
                         password: _this.$CryptoJS.AES.encrypt('test6666', 'tools').toString()
                         // 'password': 'test6666'
