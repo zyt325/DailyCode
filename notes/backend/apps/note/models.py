@@ -36,7 +36,6 @@ class NoteCategory(models.Model):
 
 
 class NoteArticle(models.Model):
-    default_theme = NoteTheme.objects.get_or_create(id=1)[0].id
     title = models.CharField(default="", unique=True, max_length=50, verbose_name="标题", help_text="标题")
     body = models.TextField(default="", blank=True, null=True, verbose_name="内容", help_text="内容")
     file_name = models.CharField(default="", unique=True, max_length=25, verbose_name="文件名", help_text="文件名")
@@ -44,27 +43,36 @@ class NoteArticle(models.Model):
     category = models.ForeignKey(NoteCategory, models.CASCADE, db_column='class_id',
                                  related_name="articles",
                                  verbose_name="文章分类")  # Field renamed because it was a Python reserved word.
-    theme = models.ForeignKey(NoteTheme, models.CASCADE, default=default_theme,
-                              db_column='theme_id', verbose_name="主题分类",null=True)
-
     def __str__(self):
-        return "%s %s %s %s" % (self.title, self.file_name, self.category, self.theme)
+        return "%s %s %s" % (self.title, self.file_name, self.category)
 
     class Meta:
         db_table = "%sarticle" % table_prefix
         app_label = 'note'
 
 # 
-class NoteArticleBak(models.Model):
-    title = models.CharField(max_length=50)
-    body = models.TextField(blank=True, null=True)
-    file_name = models.CharField(max_length=25)
-    create_at = models.DateTimeField()
+# class NoteArticleBak(models.Model):
+#     title = models.CharField(max_length=50)
+#     body = models.TextField(blank=True, null=True)
+#     file_name = models.CharField(max_length=25)
+#     create_at = models.DateTimeField()
+#
+#     class Meta:
+#         managed = False
+#         db_table = "%sarticle_bak" % table_prefix
+#         app_label = 'note'
+
+class NoteMapArticleTheme(models.Model):
+    theme = models.ForeignKey(NoteTheme, models.CASCADE, db_column = 'theme_id', verbose_name = "主题", null = True)
+    article = models.ForeignKey(NoteArticle, models.CASCADE,db_column='article_id', verbose_name="文章",
+                              null=True)
+    def __str__(self):
+        return "%s %s" % (self.theme, self.article)
 
     class Meta:
-        managed = False
-        db_table = "%sarticle_bak" % table_prefix
+        db_table = "%sMapArticleTheme" % table_prefix
         app_label = 'note'
+        unique_together = (('article', 'theme'),)
 
 # class NoteArticleView(models.Model):
 #     article_id = models.IntegerField(primary_key=True)

@@ -37,6 +37,10 @@
         {#                <a class="nav-link" href="#">Sign out</a>#}
         {#            </li>#}
         {#        </ul>#}
+        <div style="float:right;color:#fff;">
+            {{ username }}
+            <button id="logout" class="btn btn-secondary btn-xs" onclick="location.href='{{ url('sites:logout') }}'">Logout</button>
+        </div>
     </nav>
     <div class="container-fluid">
         <div class="row">

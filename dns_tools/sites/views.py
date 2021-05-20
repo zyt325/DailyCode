@@ -13,7 +13,7 @@ def check_login(fn):
         if request.session.get('is_login_dns_username', False):
             return fn(request, *args, *kwargs)
         else:
-            return redirect('login')
+            return redirect('sites:login')
 
     return wrapper
 
@@ -27,20 +27,25 @@ def login(request):
         if user:
             request.session['is_login_dns_username'] = True
             request.session.set_expiry(86400)
-            # request.session['username'] = username
-            return redirect('index')
+            request.session['username'] = username
+            return redirect('sites:index')
         else:
             return render(request, 'login.html', {'notify': 'authentication failed'})
     else:
         request.session.clear_expired()
         if request.session.get('is_login_dns_username', False):
-            return redirect('index')
+            return redirect('sites:index')
         return render(request, 'login.html')
 
+def logout(request):
+    request.session.clear_expired()
+    request.session.flush()
+    return redirect('sites:login')
 
 # Create your views here.
 @check_login
 def index(request):
+    username=request.session.get('username',False)
     return render(request, 'index.html', context=locals())
 
 
@@ -215,7 +220,7 @@ def rr_add(request):
         if disabled_flag == 'on': disabled_flag = 1
         reversed_flag = request.POST.get('reversed_flag', 0)
         if reversed_flag == 'on': reversed_flag = 1
-        user = request.POST.get('user', 'test')
+        user = request.session.get('username','test')
         update_date = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
         # print(name, type, value, city, zone_name, cname, disabled_flag, reversed_flag, user, update_date)
         # print(zones)
@@ -274,7 +279,7 @@ def rr_edit(request, id):
         if disabled_flag == 'on': disabled_flag = 1
         reversed_flag = request.POST.get('reversed_flag', 0)
         if reversed_flag == 'on': reversed_flag = 1
-        user = request.POST.get('user', 'test')
+        user = request.session.get('username','test')
         update_date = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
 
         from .models import DnsToolBindrr, DnsToolBindzones, DnsRrs
@@ -317,6 +322,7 @@ def flush_rr(request):
             message = message.decode('utf-8')  # 接收前端发来的数据
             if message == 'flush_rr':  # 这里根据web页面获取的值进行对应的操作
                 command = 'cd /var/www/dns-tool.base-fx.com/dns_tool/bind_information_manager/ ;python3 flush_db.py'  # 这里是要执行的命令或者脚本
+                # command = 'tail -f /tmp/a'  # 这里是要执行的命令或者脚本
 
                 # 远程连接服务器
                 hostname = 'int-web01.base-fx.com'
@@ -327,31 +333,31 @@ def flush_rr(request):
 
                 # pky=pkey = paramiko.RSAKey.from_private_key_file('./basefx')
                 key_str = """-----BEGIN RSA PRIVATE KEY-----
-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
+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
 -----END RSA PRIVATE KEY-----"""
                 pkey = paramiko.RSAKey(file_obj=StringIO(key_str))
                 ssh.connect(hostname=hostname, username=username, pkey=pkey)

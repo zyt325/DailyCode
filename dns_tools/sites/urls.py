@@ -1,9 +1,11 @@
 from django.urls import path, include
 from . import views
 
+app_name='sites'
 urlpatterns = [
     path('', views.index, name='index'),
     path('login/', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),
     path('menu/', views.zones_menu, name='menu'),
     path('rr_search/', views.rr_search, name='search'),
     path('rr_get/<int:id>/', views.rr_get, name='get'),

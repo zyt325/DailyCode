@@ -12,7 +12,10 @@
         };
         socket.onmessage = function (e) {
             $('#messagecontainer').append(e.data+'<br/>');
+            wd=document.body.clientHeight;
+            window.scroll({top:wd,left:0,behavior:'smooth'});
         };
+
     </script>
     <style>
         pre{
@@ -21,6 +24,7 @@
             display: block;
             font-family: monospace;
         }
+
     </style>
 </head>
 <body>

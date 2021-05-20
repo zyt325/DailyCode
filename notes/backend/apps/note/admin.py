@@ -31,7 +31,7 @@ class NoteCategoryAdmin(MultiDBModelAdmin):
     list_filter = ['type']
 
 class NoteArticleAdmin(MultiDBModelAdmin):
-    list_display = ['title','file_name','category','theme']
+    list_display = ['title','file_name','category']
     list_filter = ['category']
     list_per_page = 20
     search_fields = ['title','body']
@@ -41,7 +41,12 @@ class NoteThemeAdmin(MultiDBModelAdmin):
     list_filter = ['name']
     list_per_page = 20
 
-from .models import NoteCategory,NoteArticle,NoteTheme
+class NoteMapArticleThemeAdmin(MultiDBModelAdmin):
+    list_display = ['article','theme']
+    list_per_page = 20
+
+from .models import NoteCategory,NoteArticle,NoteTheme,NoteMapArticleTheme
 admin.site.register(NoteCategory,NoteCategoryAdmin)
 admin.site.register(NoteArticle,NoteArticleAdmin)
 admin.site.register(NoteTheme,NoteThemeAdmin)
+admin.site.register(NoteMapArticleTheme,NoteMapArticleThemeAdmin)
